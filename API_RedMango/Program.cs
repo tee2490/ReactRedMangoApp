@@ -1,4 +1,5 @@
 using API_RedMango.Data;
+using API_RedMango.Models;
 using Microsoft.AspNetCore.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -10,7 +11,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<ApplicationDbContext>();
-builder.Services.AddIdentity<IdentityUser, IdentityRole>().AddEntityFrameworkStores<ApplicationDbContext>();
+builder.Services.AddIdentity<ApplicationUser, IdentityRole>().AddEntityFrameworkStores<ApplicationDbContext>();
 
 var app = builder.Build();
 
