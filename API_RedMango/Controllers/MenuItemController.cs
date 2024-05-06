@@ -11,7 +11,7 @@ namespace API_RedMango.Controllers
         private readonly ApplicationDbContext _db;
         private readonly IFileUpload _fileUpload;
         private ApiResponse _response;
-        public MenuItemController(ApplicationDbContext db,IFileUpload fileUpload)
+        public MenuItemController(ApplicationDbContext db, IFileUpload fileUpload)
         {
             _db = db;
             _fileUpload = fileUpload;
@@ -91,6 +91,93 @@ namespace API_RedMango.Controllers
                 _response.IsSuccess = false;
                 _response.ErrorMessages
                      = new List<string>() { ex.ToString() };
+            }
+
+            return _response;
+        }
+
+        [HttpPut("{id:int}")]
+        public async Task<ActionResult<ApiResponse>> UpdateMenuItem(int id, [FromForm] MenuItemUpdateDTO menuItemUpdateDTO)
+        {
+            try
+            {
+                if (ModelState.IsValid)
+                {
+                    if (menuItemUpdateDTO == null || id != menuItemUpdateDTO.Id)
+                    {
+                        return BadRequest();
+                    }
+
+                    MenuItem menuItemFromDb = await _db.MenuItems.FindAsync(id);
+
+                    if (menuItemFromDb == null)
+                    {
+                        return BadRequest();
+                    }
+
+                    menuItemFromDb.Name = menuItemUpdateDTO.Name;
+                    menuItemFromDb.Price = menuItemUpdateDTO.Price;
+                    menuItemFromDb.Category = menuItemUpdateDTO.Category;
+                    menuItemFromDb.SpecialTag = menuItemUpdateDTO.SpecialTag;
+                    menuItemFromDb.Description = menuItemUpdateDTO.Description;
+
+                    if (menuItemUpdateDTO.File != null && menuItemUpdateDTO.File.Length > 0)
+                    {
+                        string fileName = $"{Guid.NewGuid()}{Path.GetExtension(menuItemUpdateDTO.File.FileName)}";
+                        _fileUpload.DeleteFile(menuItemFromDb.Image);
+                        menuItemFromDb.Image = await _fileUpload.UploadFile(menuItemUpdateDTO.File);
+                    }
+
+                    _db.MenuItems.Update(menuItemFromDb);
+                    await _db.SaveChangesAsync();
+
+                    _response.StatusCode = HttpStatusCode.NoContent;
+                    return Ok(_response);
+
+                }
+                else
+                {
+                    _response.IsSuccess = false;
+                }
+            }
+            catch (Exception ex)
+            {
+                _response.IsSuccess = false;
+                _response.ErrorMessages = new List<string>() { ex.ToString() };
+            }
+
+            return _response;
+        }
+
+        [HttpDelete("{id:int}")]
+        public async Task<ActionResult<ApiResponse>> DeleteMenuItem(int id)
+        {
+            try
+            {
+                if (id == 0)
+                {
+                    return BadRequest();
+                }
+
+                MenuItem menuItemFromDb = await _db.MenuItems.FindAsync(id);
+
+                if (menuItemFromDb == null)
+                {
+                    return BadRequest();
+                }
+
+                _fileUpload.DeleteFile(menuItemFromDb.Image);
+
+                _db.MenuItems.Remove(menuItemFromDb);
+                await _db.SaveChangesAsync();
+
+                _response.StatusCode = HttpStatusCode.NoContent;
+                return Ok(_response);
+            }
+            catch (Exception ex)
+            {
+                _response.IsSuccess = false;
+                _response.ErrorMessages = new List<string>() { ex.ToString() };
             }
 
             return _response;
