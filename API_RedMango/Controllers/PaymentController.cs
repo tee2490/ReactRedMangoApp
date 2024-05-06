@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Stripe;
 using System.Net;
 
 namespace API_RedMango.Controllers
@@ -35,7 +36,29 @@ namespace API_RedMango.Controllers
             }
 
             #region Create Payment Intent
+            //https://docs.stripe.com/api/payment_intents/create (ไปดูเวอร์ชันปัจจุบันใช้อย่างไร)
 
+            StripeConfiguration.ApiKey = _configuration["StripeSettings:SecretKey"];
+            shoppingCart.CartTotal = shoppingCart.CartItems.Sum(u => u.Quantity * u.MenuItem.Price);
+
+            //กำหนดตัวเลือกและใส่ข้อมูลที่ส่งไปยังปลายทาง stripe
+            var options = new PaymentIntentCreateOptions
+            {
+                Amount = (int)(shoppingCart.CartTotal * 100),
+                Currency = "usd",
+                AutomaticPaymentMethods = new PaymentIntentAutomaticPaymentMethodsOptions
+                {
+                    Enabled = true,
+                },
+            };
+
+            //ส่งไปยังผู้ให้บริการ stripe
+            var service = new PaymentIntentService();
+            PaymentIntent response = service.Create(options);
+
+            //นำค่าที่ได้รับจาก stripe บันทึกเก็บไว้
+            shoppingCart.StripePaymentIntentId = response.Id;
+            shoppingCart.ClientSecret = response.ClientSecret;
 
             #endregion
 
