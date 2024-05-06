@@ -84,5 +84,45 @@ namespace API_RedMango.Controllers
             _response.ErrorMessages.Add("Error while registering");
             return BadRequest(_response);
         }
+
+        [HttpPost("login")]
+        public async Task<IActionResult> Login([FromBody] LoginRequestDTO model)
+        {
+            ApplicationUser userFromDb = await _db.ApplicationUsers
+                    .FirstOrDefaultAsync(u => u.UserName.ToLower() == model.UserName.ToLower());
+
+            bool isValid = await _userManager.CheckPasswordAsync(userFromDb, model.Password);
+
+            if (isValid == false)
+            {
+                _response.Result = new LoginResponseDTO();
+                _response.StatusCode = HttpStatusCode.BadRequest;
+                _response.IsSuccess = false;
+                _response.ErrorMessages.Add("Username or password is incorrect");
+                return BadRequest(_response);
+            }
+
+            //we have to generate JWT Token
+
+
+            LoginResponseDTO loginResponse = new()
+            {
+                Email = userFromDb.Email,
+                Token = "REPLACE WITH ACTUAL TOKEN ONCE WE GENERATE"
+            };
+
+            if (loginResponse.Email == null || string.IsNullOrEmpty(loginResponse.Token))
+            {
+                _response.StatusCode = HttpStatusCode.BadRequest;
+                _response.IsSuccess = false;
+                _response.ErrorMessages.Add("Username or password is incorrect");
+                return BadRequest(_response);
+            }
+
+            _response.StatusCode = HttpStatusCode.OK;
+            _response.IsSuccess = true;
+            _response.Result = loginResponse;
+            return Ok(_response);
+        }
     }
 }
