@@ -1,5 +1,9 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using API_RedMango.Models.Dto;
+using API_RedMango.Utility;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using System.Net;
 
 namespace API_RedMango.Controllers
 {
@@ -21,6 +25,64 @@ namespace API_RedMango.Controllers
             _response = new ApiResponse();
             _userManager = userManager;
             _roleManager = roleManager;
+        }
+
+        [HttpPost("register")]
+        public async Task<IActionResult> Register([FromBody] RegisterRequestDTO model)
+        {
+            ApplicationUser userFromDb = await _db.ApplicationUsers
+                .FirstOrDefaultAsync(u => u.UserName.ToLower() == model.UserName.ToLower());
+
+            if (userFromDb != null)
+            {
+                _response.StatusCode = HttpStatusCode.BadRequest;
+                _response.IsSuccess = false;
+                _response.ErrorMessages.Add("Username already exists");
+                return BadRequest(_response);
+            }
+
+            ApplicationUser newUser = new()
+            {
+                UserName = model.UserName,
+                Email = model.UserName,
+                NormalizedEmail = model.UserName.ToUpper(),
+                Name = model.Name
+            };
+
+            try
+            {
+                var result = await _userManager.CreateAsync(newUser, model.Password);
+                if (result.Succeeded)
+                {
+                    if (!_roleManager.RoleExistsAsync(SD.Role_Admin).GetAwaiter().GetResult())
+                    {
+                        //create roles in database
+                        await _roleManager.CreateAsync(new IdentityRole(SD.Role_Admin));
+                        await _roleManager.CreateAsync(new IdentityRole(SD.Role_Customer));
+                    }
+                    if (model.Role.ToLower() == SD.Role_Admin)
+                    {
+                        await _userManager.AddToRoleAsync(newUser, SD.Role_Admin);
+                    }
+                    else
+                    {
+                        await _userManager.AddToRoleAsync(newUser, SD.Role_Customer);
+                    }
+
+                    _response.StatusCode = HttpStatusCode.OK;
+                    _response.IsSuccess = true;
+                    return Ok(_response);
+                }
+            }
+            catch (Exception)
+            {
+
+            }
+
+            _response.StatusCode = HttpStatusCode.BadRequest;
+            _response.IsSuccess = false;
+            _response.ErrorMessages.Add("Error while registering");
+            return BadRequest(_response);
         }
     }
 }
