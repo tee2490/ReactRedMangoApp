@@ -1,5 +1,5 @@
-using API_RedMango.Data;
-using API_RedMango.Models;
+global using API_RedMango.Data;
+global using API_RedMango.Models;
 using Microsoft.AspNetCore.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
