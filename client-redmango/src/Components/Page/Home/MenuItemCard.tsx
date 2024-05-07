@@ -1,9 +1,12 @@
-import React from 'react'
+import React from "react";
+import { menuItemModel } from "../../../Interfaces";
 
-function MenuItemCard() {
-  return (
-    <div>MenuItemCard</div>
-  )
+interface Props {
+  menuItem: menuItemModel;
 }
 
-export default MenuItemCard
+function MenuItemCard(props: Props) {
+  return <div>{props.menuItem.name}</div>;
+}
+
+export default MenuItemCard;
