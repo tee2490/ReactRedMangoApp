@@ -4,6 +4,7 @@ import { useGetMenuItemByIdQuery } from "../Apis/menuItemApi";
 import { useNavigate } from "react-router-dom";
 import { baseUrl } from "../Common/SD";
 import { useUpdateShoppingCartMutation } from "../Apis/shoppingCartApi";
+import { MainLoader } from "../Common";
 
 // admin id : 94bb0b08-462f-4a95-8545-940b187588f2
 
@@ -119,7 +120,7 @@ export default function MenuItemDetails() {
           className="d-flex justify-content-center"
           style={{ width: "100%" }}
         >
-          <div>Loading...</div>
+          <MainLoader/>
         </div>
       )}
     </div>
