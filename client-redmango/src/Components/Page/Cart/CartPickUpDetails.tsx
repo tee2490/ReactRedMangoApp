@@ -1,6 +1,8 @@
+import { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { cartItemModel } from "../../../Interfaces";
 import { RootState } from "../../../Redux/store";
+import { inputHelper } from "../../../Helper";
 
 export default function CartPickUpDetails() {
   const shoppingCartFromStore: cartItemModel[] = useSelector(
@@ -14,6 +16,18 @@ export default function CartPickUpDetails() {
     grandTotal += (cartItem.menuItem?.price ?? 0) * (cartItem.quantity ?? 0);
     return null;
   });
+
+  const initialUserData = {
+    name: "",
+    email: "",
+    phoneNumber: "",
+  };
+
+  const [userInput, setUserInput] = useState(initialUserData);
+  const handleUserInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const tempData = inputHelper(e, userInput);
+    setUserInput(tempData);
+  };
 
   return (
     <div className="border pb-5 pt-3">
@@ -30,6 +44,8 @@ export default function CartPickUpDetails() {
             placeholder="name..."
             name="name"
             required
+            value={userInput.name}
+            onChange={handleUserInput}
           />
         </div>
         <div className="form-group mt-3">
@@ -40,6 +56,8 @@ export default function CartPickUpDetails() {
             placeholder="email..."
             name="email"
             required
+            value={userInput.email}
+            onChange={handleUserInput}
           />
         </div>
 
@@ -51,6 +69,8 @@ export default function CartPickUpDetails() {
             placeholder="phone number..."
             name="phoneNumber"
             required
+            value={userInput.phoneNumber}
+            onChange={handleUserInput}
           />
         </div>
         <div className="form-group mt-3">
