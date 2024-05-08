@@ -1,4 +1,4 @@
-import { CartSummary } from "../Components/Page/Cart";
+import { CartPickUpDetails, CartSummary } from "../Components/Page/Cart";
 
 export default function ShoppingCart() {
   return (
@@ -6,7 +6,9 @@ export default function ShoppingCart() {
       <div className="col-lg-6 col-12" style={{ fontWeight: 300 }}>
         <CartSummary />
       </div>
-      <div className="col-lg-6 col-12 p-4 ">User Details</div>
+      <div className="col-lg-6 col-12 p-4 ">
+        <CartPickUpDetails />
+      </div>
     </div>
   );
 }
