@@ -3,10 +3,7 @@ import { NavLink, useNavigate } from "react-router-dom";
 import { cartItemModel, userModel } from "../../Interfaces";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../Redux/store";
-import {
-  emptyUserState,
-  setLoggedInUser,
-} from "../../Redux/userAuthSlice";
+import { emptyUserState, setLoggedInUser } from "../../Redux/userAuthSlice";
 
 function Header() {
   const dispatch = useDispatch();
@@ -44,7 +41,7 @@ function Header() {
             <span className="navbar-toggler-icon" />
           </button>
           <div className="collapse navbar-collapse" id="navbarSupportedContent">
-          <ul className="navbar-nav me-auto mb-2 mb-lg-0 w-100">
+            <ul className="navbar-nav me-auto mb-2 mb-lg-0 w-100">
               <li className="nav-item">
                 <NavLink className="nav-link" aria-current="page" to="/">
                   Home
@@ -62,6 +59,26 @@ function Header() {
                     : ""}
                 </NavLink>
               </li>
+
+              <li className="nav-item">
+                <NavLink
+                  className="nav-link"
+                  aria-current="page"
+                  to="/authentication"
+                >
+                  Authentication
+                </NavLink>
+              </li>
+              <li className="nav-item">
+                <NavLink
+                  className="nav-link"
+                  aria-current="page"
+                  to="/authorization"
+                >
+                  Authorization
+                </NavLink>
+              </li>
+
               <li className="nav-item dropdown">
                 <a
                   className="nav-link dropdown-toggle"
@@ -95,8 +112,7 @@ function Header() {
               </li>
 
               <div className="d-flex" style={{ marginLeft: "auto" }}>
-                
-              {userData.id && (
+                {userData.id && (
                   <>
                     <li className="nav-item">
                       <button
@@ -149,7 +165,6 @@ function Header() {
                   </>
                 )}
               </div>
-
             </ul>
           </div>
         </div>
