@@ -1,11 +1,16 @@
 import { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { cartItemModel } from "../../../Interfaces";
+import { apiResponse, cartItemModel } from "../../../Interfaces";
 import { RootState } from "../../../Redux/store";
 import { inputHelper } from "../../../Helper";
 import { MiniLoader } from "../../../Common";
+import { useInitiatePaymentMutation } from "../../../Apis/paymentApi";
+import { useNavigate } from "react-router-dom";
 
 export default function CartPickUpDetails() {
+  const [initiatePayment] = useInitiatePaymentMutation();
+  const navigate = useNavigate();
+
   const userData = useSelector((state: RootState) => state.userAuthStore);
   const [loading, setLoading] = useState(false);
   const shoppingCartFromStore: cartItemModel[] = useSelector(
@@ -43,6 +48,15 @@ export default function CartPickUpDetails() {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
+
+    const { data }: apiResponse = await initiatePayment(userData.id);
+    const orderSummary = { grandTotal, totalItems };
+
+    console.log(data)
+    
+    navigate("/payment", {
+      state: { apiResult: data?.result, userInput },
+    });
   };
 
   return (

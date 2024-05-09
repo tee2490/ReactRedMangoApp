@@ -7,6 +7,7 @@ import {
   Login,
   MenuItemDetails,
   NotFound,
+  Payment,
   Register,
   ShoppingCart,
 } from "../Pages";
@@ -18,7 +19,7 @@ import { setShoppingCart } from "../Redux/shoppingCartSlice";
 import { userModel } from "../Interfaces";
 import { jwtDecode } from "jwt-decode";
 import { setLoggedInUser } from "../Redux/userAuthSlice";
-import { RootState } from "../Storage/Redux/store";
+import { RootState } from "../Redux/store";
 
 function App() {
   const dispatch = useDispatch();
@@ -29,7 +30,6 @@ function App() {
 
   useEffect(() => {
     if (!isLoading) {
-      console.log(data.result);
       dispatch(setShoppingCart(data.result?.cartItems));
     }
   }, [data]);
@@ -64,6 +64,7 @@ function App() {
             element={<AuthenticationTestAdmin />}
           ></Route>
           <Route path="/accessDenied" element={<AccessDenied />} />
+          <Route path="/payment" element={<Payment />} />
           <Route path="*" element={<NotFound />}></Route>
         </Routes>
       </div>
