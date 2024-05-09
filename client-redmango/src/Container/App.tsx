@@ -12,19 +12,20 @@ import {
 } from "../Pages";
 import { Route, Routes } from "react-router-dom";
 import { useEffect } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useGetShoppingCartQuery } from "../Apis/shoppingCartApi";
 import { setShoppingCart } from "../Redux/shoppingCartSlice";
 import { userModel } from "../Interfaces";
 import { jwtDecode } from "jwt-decode";
 import { setLoggedInUser } from "../Redux/userAuthSlice";
+import { RootState } from "../Storage/Redux/store";
 
 function App() {
   const dispatch = useDispatch();
 
-  const { data, isLoading } = useGetShoppingCartQuery(
-    "94bb0b08-462f-4a95-8545-940b187588f2"
-  );
+  const userData = useSelector((state: RootState) => state.userAuthStore);
+
+  const { data, isLoading } = useGetShoppingCartQuery(userData.id);
 
   useEffect(() => {
     if (!isLoading) {
