@@ -1,7 +1,8 @@
-export default function OrderSummary() {
+import { orderSummaryProps } from "./orderSummaryProps";
+
+export default function OrderSummary({ data, userInput }: orderSummaryProps) {
   return (
     <div>
-      {" "}
       <h3 className="text-success">Order Summary</h3>
       <div className="mt-3">
         <div className="border py-3 px-2">Name : </div>

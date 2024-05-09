@@ -23,7 +23,7 @@ function Payment() {
       <div className="container m-5 p-5">
         <div className="row">
           <div className="col-md-7">
-            <OrderSummary />
+            <OrderSummary data={apiResult} userInput={userInput} />
           </div>
           <div className="col-md-4 offset-md-1">
             <h3 className="text-success">Payment</h3>
