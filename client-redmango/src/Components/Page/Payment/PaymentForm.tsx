@@ -6,13 +6,20 @@ import {
 import { toastNotify } from "../../../Helper";
 import { useState } from "react";
 import { orderSummaryProps } from "../Order/orderSummaryProps";
-import { cartItemModel } from "../../../Interfaces";
+import { apiResponse, cartItemModel } from "../../../Interfaces";
+import { useCreateOrderMutation } from "../../../Apis/orderApi";
+import { SD_Status } from "../../../Common/SD";
 
 const PaymentForm = ({ data, userInput }: orderSummaryProps) => {
   const [isProcessing, setIsProcessing] = useState(false);
 
+  const [createOrder] = useCreateOrderMutation();
+
   const stripe = useStripe();
   const elements = useElements();
+
+  console.log("data");
+  console.log(data);
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -58,6 +65,8 @@ const PaymentForm = ({ data, userInput }: orderSummaryProps) => {
       // ]
 
       //สร้างออบเจคในส่วนของ OrderDetail
+      let grandTotal = 0;
+      let totalItems = 0;
       const orderDetailsDTO: any = [];
       data.cartItems.forEach((item: cartItemModel) => {
         const tempOrderDetail: any = {};
@@ -66,8 +75,29 @@ const PaymentForm = ({ data, userInput }: orderSummaryProps) => {
         tempOrderDetail["itemName"] = item.menuItem?.name;
         tempOrderDetail["price"] = item.menuItem?.price;
         orderDetailsDTO.push(tempOrderDetail);
+        grandTotal += item.quantity! * item.menuItem?.price!;
+        totalItems += item.quantity!;
       });
-    }
+
+      //ส่งไปบันทึกยัง Post : /api/Order
+      const response: apiResponse = await createOrder({
+        pickupName: userInput.name,
+        pickupPhoneNumber: userInput.phoneNumber,
+        pickupEmail: userInput.email,
+        totalItems: totalItems,
+        orderTotal: grandTotal,
+        orderDetailsDTO: orderDetailsDTO,
+        stripePaymentIntentID: data.stripePaymentIntentId,
+        applicationUserId: data.userId,
+        status:
+          result.paymentIntent.status === "succeeded"
+            ? SD_Status.CONFIRMED
+            : SD_Status.PENDING,
+      });
+
+      console.log(response);
+
+    } //ปีกกาของ else
   };
 
   return (

@@ -54,6 +54,7 @@ export default function CartPickUpDetails() {
 
     console.log(data)
     
+    //เพื่อดำเนินทำรายการกรอกบัตรเครดิตต่อไป
     navigate("/payment", {
       state: { apiResult: data?.result, userInput },
     });
