@@ -100,9 +100,15 @@ export default function OrderSummary({ data, userInput }: orderSummaryProps) {
             </button>
             {userData.role == SD_Roles.ADMIN && (
               <div className="d-flex">
-                <button onClick={handleCancel} className="btn btn-danger mx-2">
-                  Cancel
-                </button>
+                 {data.status! !== SD_Status.CANCELLED &&
+                  data.status! !== SD_Status.COMPLETED && (
+                    <button
+                      className="btn btn-danger mx-2"
+                      onClick={handleCancel}
+                    >
+                      Cancel
+                    </button>
+                  )}
                 <button
                   onClick={handleNextStatus}
                   className={`btn btn-${nextStatus.color}`}
