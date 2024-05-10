@@ -8,8 +8,10 @@ import AuthenticationTest from "./AuthenticationTest";
 import AuthenticationTestAdmin from "./AuthenticationTestAdmin";
 import AccessDenied from "./AccessDenied";
 import Payment from "./Payment";
+import OrderConfirmed from "./Order/OrderConfirmed";
 
 export {
+    OrderConfirmed,
     Payment,
     Home, NotFound,
     MenuItemDetails, ShoppingCart,
