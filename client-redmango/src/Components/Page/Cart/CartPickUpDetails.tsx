@@ -51,8 +51,6 @@ export default function CartPickUpDetails() {
 
     const { data }: apiResponse = await initiatePayment(userData.id);
     const orderSummary = { grandTotal, totalItems };
-
-    console.log(data)
     
     //เพื่อดำเนินทำรายการกรอกบัตรเครดิตต่อไป
     navigate("/payment", {

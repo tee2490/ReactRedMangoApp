@@ -20,9 +20,6 @@ const PaymentForm = ({ data, userInput }: orderSummaryProps) => {
   const stripe = useStripe();
   const elements = useElements();
 
-  console.log("data");
-  console.log(data);
-
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
@@ -46,7 +43,6 @@ const PaymentForm = ({ data, userInput }: orderSummaryProps) => {
       toastNotify("An unexpected error occured.", "error");
       setIsProcessing(false);
     } else {
-      console.log(result);
 
       // มาจาก Post : /api/Order
       // "pickupName": "string",
