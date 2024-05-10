@@ -5,8 +5,10 @@ import {
 } from "@stripe/react-stripe-js";
 import { toastNotify } from "../../../Helper";
 import { useState } from "react";
+import { orderSummaryProps } from "../Order/orderSummaryProps";
+import { cartItemModel } from "../../../Interfaces";
 
-const PaymentForm = () => {
+const PaymentForm = ({ data, userInput }: orderSummaryProps) => {
   const [isProcessing, setIsProcessing] = useState(false);
 
   const stripe = useStripe();
@@ -36,6 +38,35 @@ const PaymentForm = () => {
       setIsProcessing(false);
     } else {
       console.log(result);
+
+      // มาจาก Post : /api/Order
+      // "pickupName": "string",
+      // "pickupPhoneNumber": "string",
+      // "pickupEmail": "string",
+      // "applicationUserId": "string",
+      // "orderTotal": 0,
+      // "stripePaymentIntentID": "string",
+      // "status": "string",
+      // "totalItems": 0,
+      // "orderDetailsDTO": [
+      //   {
+      //     "menuItemId": 0,
+      //     "quantity": 0,
+      //     "itemName": "string",
+      //     "price": 0
+      //   }
+      // ]
+
+      //สร้างออบเจคในส่วนของ OrderDetail
+      const orderDetailsDTO: any = [];
+      data.cartItems.forEach((item: cartItemModel) => {
+        const tempOrderDetail: any = {};
+        tempOrderDetail["menuItemId"] = item.menuItem?.id;
+        tempOrderDetail["quantity"] = item.quantity;
+        tempOrderDetail["itemName"] = item.menuItem?.name;
+        tempOrderDetail["price"] = item.menuItem?.price;
+        orderDetailsDTO.push(tempOrderDetail);
+      });
     }
   };
 
