@@ -8,8 +8,6 @@ import { OrderList } from "../../Components/Page/Order";
 function MyOrders() {
   const userId = useSelector((state: RootState) => state.userAuthStore.id);
   const { data, isLoading } = useGetAllOrdersQuery(userId);
-  console.log(isLoading);
-  console.log(data);
 
   return (
     <>
