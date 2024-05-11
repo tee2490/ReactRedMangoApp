@@ -3,8 +3,9 @@ import { useGetAllOrdersQuery } from "../../Apis/orderApi";
 import OrderList from "../../Components/Page/Order/OrderList";
 import { MainLoader } from "../../Common";
 import { SD_Status } from "../../Common/SD";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { inputHelper } from "../../Helper";
+import { orderHeaderModel } from "../../Interfaces";
 
 const filterOptions = [
   "All",
@@ -15,6 +16,7 @@ const filterOptions = [
 ];
 
 function AllOrders() {
+  const [orderData, setOrderData] = useState([]);
   const { data, isLoading } = useGetAllOrdersQuery("");
   const [filters, setFilters] = useState({ searchString: "", status: "" });
 
@@ -24,6 +26,33 @@ function AllOrders() {
     const tempValue = inputHelper(e, filters);
     setFilters(tempValue);
   };
+
+  const handleFilters = () => {
+    const tempData = data.result.filter((orderData: orderHeaderModel) => {
+      if (
+        (orderData.pickupName &&
+          orderData.pickupName.includes(filters.searchString)) ||
+        (orderData.pickupEmail &&
+          orderData.pickupEmail.includes(filters.searchString)) ||
+        (orderData.pickupPhoneNumber &&
+          orderData.pickupPhoneNumber.includes(filters.searchString))
+      ) {
+        return orderData;
+      }
+    });
+
+    const finalArray = tempData.filter((orderData: orderHeaderModel) =>
+      filters.status !== "" ? orderData.status === filters.status : orderData
+    );
+
+    setOrderData(finalArray);
+  };
+
+  useEffect(() => {
+    if (data) {
+      setOrderData(data.result);
+    }
+  }, [data]);
 
   return (
     <>
@@ -45,15 +74,22 @@ function AllOrders() {
                 onChange={handleChange}
                 name="status"
               >
-                {filterOptions.map((item) => (
-                  <option value={item === "All" ? "" : item}>{item}</option>
+                {filterOptions.map((item, index) => (
+                  <option key={index} value={item === "All" ? "" : item}>
+                    {item}
+                  </option>
                 ))}
               </select>
-              <button className="btn btn-outline-success">Filter</button>
+              <button
+                onClick={handleFilters}
+                className="btn btn-outline-success"
+              >
+                Filter
+              </button>
             </div>
           </div>
 
-          <OrderList isLoading={isLoading} orderData={data.result} />
+          <OrderList isLoading={isLoading} orderData={orderData} />
         </>
       )}
     </>
