@@ -1,6 +1,17 @@
+import { useState } from "react";
 import "./banner.css";
+import { useDispatch } from "react-redux";
+import { setSearchItem } from "../Redux/menuItemSlice";
 
 function Banner() {
+    const [value, setValue] = useState("");
+    const dispatch = useDispatch();
+  
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+      dispatch(setSearchItem(e.target.value));
+      setValue(e.target.value);
+    };
+
   return (
     <div className="custom-banner">
       <div
@@ -12,6 +23,8 @@ function Banner() {
       >
         <div className="d-flex align-items-center" style={{ width: "100%" }}>
           <input
+            value={value}
+            onChange={handleChange}
             type={"text"}
             className="form-control rounded-pill"
             style={{
