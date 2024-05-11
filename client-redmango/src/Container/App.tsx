@@ -18,7 +18,7 @@ import {
   ShoppingCart,
 } from "../Pages";
 import { Route, Routes } from "react-router-dom";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useGetShoppingCartQuery } from "../Apis/shoppingCartApi";
 import { setShoppingCart } from "../Redux/shoppingCartSlice";
@@ -28,14 +28,17 @@ import { setLoggedInUser } from "../Redux/userAuthSlice";
 import { RootState } from "../Redux/store";
 
 function App() {
+  const [skip, setSkip] = useState(true);
   const dispatch = useDispatch();
 
   const userData = useSelector((state: RootState) => state.userAuthStore);
 
-  const { data, isLoading } = useGetShoppingCartQuery(userData.id);
+  const { data, isLoading } = useGetShoppingCartQuery(userData.id,{
+    skip: skip,
+  });
 
   useEffect(() => {
-    if (!isLoading) {
+    if (!isLoading && data) {
       dispatch(setShoppingCart(data.result?.cartItems));
     }
   }, [data]);
@@ -47,6 +50,11 @@ function App() {
       dispatch(setLoggedInUser({ fullName, id, email, role }));
     }
   }, []);
+
+  useEffect(() => {
+    //ถ้า userData มีการเปลี่ยนแปลงค่า โดย userData.id มีค่าให้เปลี่ยนสเตทเป็น false
+    if (userData.id) setSkip(false);
+  }, [userData]);
 
   return (
     <div>
