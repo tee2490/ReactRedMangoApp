@@ -12,8 +12,10 @@ import OrderConfirmed from "./Order/OrderConfirmed";
 import MyOrders from "./Order/MyOrders";
 import OrderDetails from "./Order/OrderDetails";
 import AllOrders from "./Order/AllOrders";
+import MainList from "./MenuItem/MainList";
 
 export {
+    MainList,
     AllOrders,
     OrderDetails,
     MyOrders,
