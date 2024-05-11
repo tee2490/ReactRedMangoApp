@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import { inputHelper, toastNotify } from "../../Helper";
+import { useCreateMenuItemMutation } from "../../Apis/menuItemApi";
+import { useNavigate } from "react-router-dom";
 
 const menuItemData = {
   name: "",
@@ -10,6 +12,9 @@ const menuItemData = {
 };
 
 function MenuItemUpsert() {
+  const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
+  const [createMenuItem] = useCreateMenuItemMutation();
   const [imageToStore, setImageToStore] = useState<any>();
   const [imageToDisplay, setimageToDisplay] = useState<string>("");
   const [menuItemInputs, setMenuItemInputs] = useState(menuItemData);
@@ -53,10 +58,38 @@ function MenuItemUpsert() {
     }
   };
 
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setLoading(true);
+
+    if (!imageToStore) {
+      toastNotify("Please upload an image", "error");
+      setLoading(false);
+      return;
+    }
+
+    const formData = new FormData();
+
+    formData.append("Name", menuItemInputs.name);
+    formData.append("Description", menuItemInputs.description);
+    formData.append("SpecialTag", menuItemInputs.specialTag);
+    formData.append("Category", menuItemInputs.category);
+    formData.append("Price", menuItemInputs.price);
+    formData.append("File", imageToStore);
+
+    const response = await createMenuItem(formData);
+    if (response) {
+      setLoading(false);
+      navigate("/menuItem/mainList");
+    }
+
+    setLoading(false);
+  };
+
   return (
     <div className="container border mt-5 p-5">
       <h3 className="offset-2 px-2 text-success">Add Product</h3>
-      <form method="post" encType="multipart/form-data">
+      <form method="post" encType="multipart/form-data" onSubmit={handleSubmit}>
         <div className="row mt-3">
           <div className="col-md-5 offset-2">
             <input
@@ -71,6 +104,10 @@ function MenuItemUpsert() {
             <textarea
               className="form-control mt-3"
               placeholder="Enter Description"
+              name="description"
+              rows={5}
+              value={menuItemInputs.description}
+              onChange={handleMenuItemInput}
             ></textarea>
             <input
               type="text"
