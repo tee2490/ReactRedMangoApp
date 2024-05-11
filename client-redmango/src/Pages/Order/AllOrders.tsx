@@ -15,6 +15,11 @@ const filterOptions = [
 ];
 
 function AllOrders() {
+  const [totalRecords, setTotalRecords] = useState(0);
+  const [pageOptions, setPageOptions] = useState({
+    pageNumber: 1,
+    pageSize: 5,
+  });
   const [orderData, setOrderData] = useState([]);
 
   const [filters, setFilters] = useState({ searchString: "", status: "" });
@@ -48,7 +53,9 @@ function AllOrders() {
 
   useEffect(() => {
     if (data) {
-      setOrderData(data.result);
+      setOrderData(data.apiResponse.result);
+      const { TotalRecords } = JSON.parse(data.totalRecords);
+      setTotalRecords(TotalRecords);
     }
   }, [data]);
 
@@ -57,6 +64,7 @@ function AllOrders() {
       {isLoading && <MainLoader />}
       {!isLoading && (
         <>
+        <h4>All Order : {totalRecords}</h4>
           <div className="d-flex align-items-center justify-content-between mx-5 mt-5">
             <h1 className="text-success">Orders List</h1>
             <div className="d-flex" style={{ width: "40%" }}>
