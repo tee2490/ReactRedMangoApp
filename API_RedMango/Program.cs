@@ -97,7 +97,8 @@ app.UseHttpsRedirection();
 
 app.UseStaticFiles();
 
-app.UseCors(o => o.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin());
+app.UseCors(o => o.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin().WithExposedHeaders("*"));
+//.WithExposedHeaders("*") อนุญาตให้ frontend สามารถนำค่าที่ header ไปใช้ได้
 
 app.UseAuthentication();
 app.UseAuthorization();

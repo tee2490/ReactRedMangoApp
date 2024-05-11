@@ -3,6 +3,7 @@ using API_RedMango.Utility;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Net;
+using System.Text.Json;
 
 namespace API_RedMango.Controllers
 {
@@ -20,7 +21,8 @@ namespace API_RedMango.Controllers
         }
 
         [HttpGet] //ลูกค้าหนึ่งคนสั่งได้หลาย order
-        public async Task<ActionResult<ApiResponse>> GetOrders(string? userId, string? searchString, string? status)
+        public async Task<ActionResult<ApiResponse>> GetOrders(string? userId, string? searchString, string? status
+            , int pageNumber = 1, int pageSize = 5)
         {
             try
             {
@@ -30,7 +32,7 @@ namespace API_RedMango.Controllers
 
                 if (!string.IsNullOrEmpty(userId))
                 {
-                    _response.Result = orderHeaders.Where(u => u.ApplicationUserId == userId);
+                    orderHeaders = orderHeaders.Where(u => u.ApplicationUserId == userId);
                 }
 
                 if (!string.IsNullOrEmpty(searchString))
@@ -46,6 +48,18 @@ namespace API_RedMango.Controllers
                     _response.Result = orderHeaders;
                     orderHeaders = orderHeaders.Where(u => u.Status.ToLower() == status.ToLower());
                 }
+
+                Pagination pagination = new()
+                {
+                    CurrentPage = pageNumber,
+                    PageSize = pageSize,
+                    TotalRecords = orderHeaders.Count(),
+                };
+
+                //เป็นคลาสของระบบสำหรับแนบค่าแบบ dictionary ไปกับ header (ให้ frontend นำไปใช้ได้)
+                Response.Headers.Add("X-Pagination", JsonSerializer.Serialize(pagination));
+
+                _response.Result = orderHeaders.Skip((pageNumber - 1) * pageSize).Take(pageSize);
 
                 _response.StatusCode = HttpStatusCode.OK;
                 return Ok(_response);
