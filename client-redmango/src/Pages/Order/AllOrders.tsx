@@ -20,6 +20,9 @@ function AllOrders() {
     pageNumber: 1,
     pageSize: 5,
   });
+
+  const [currentPageSize, setCurrentPageSize] = useState(pageOptions.pageSize);
+
   const [orderData, setOrderData] = useState([]);
 
   const [filters, setFilters] = useState({ searchString: "", status: "" });
@@ -50,7 +53,6 @@ function AllOrders() {
       searchString: filters.searchString,
       status: filters.status,
     });
-
   };
 
   useEffect(() => {
@@ -73,11 +75,16 @@ function AllOrders() {
             } of ${totalRecords}`;
   };
 
-  const handlePaginationClick = (direction: string) => {
+  const handlePaginationClick = (direction: string, pageSize?: number) => {
     if (direction === "prev") {
       setPageOptions({ pageSize: 5, pageNumber: pageOptions.pageNumber - 1 });
     } else if (direction === "next") {
       setPageOptions({ pageSize: 5, pageNumber: pageOptions.pageNumber + 1 });
+    } else if (direction === "change") {
+      setPageOptions({
+        pageSize: pageSize ? pageSize : 5,
+        pageNumber: 1,
+      });
     }
   };
 
@@ -86,7 +93,7 @@ function AllOrders() {
       {isLoading && <MainLoader />}
       {!isLoading && (
         <>
-        <h4>All Order : {totalRecords}</h4>
+          <h4>All Order : {totalRecords}</h4>
           <div className="d-flex align-items-center justify-content-between mx-5 mt-5">
             <h1 className="text-success">Orders List</h1>
             <div className="d-flex" style={{ width: "40%" }}>
@@ -120,6 +127,24 @@ function AllOrders() {
           <OrderList isLoading={isLoading} orderData={orderData} />
 
           <div className="d-flex mx-5 justify-content-end align-items-center">
+            <div>Rows per page: </div>
+            <div>
+              <select
+                className="form-select mx-2"
+                onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
+                  handlePaginationClick("change", Number(e.target.value));
+                  setCurrentPageSize(Number(e.target.value));
+                }}
+                style={{ width: "80px" }}
+                value={currentPageSize}
+              >
+                <option>5</option>
+                <option>10</option>
+                <option>15</option>
+                <option>20</option>
+              </select>
+            </div>
+
             <div className="mx-2">{getPageDetails()}</div>
             <button
               onClick={() => handlePaginationClick("prev")}
@@ -138,7 +163,6 @@ function AllOrders() {
               <i className="bi bi-chevron-right"></i>
             </button>
           </div>
-          
         </>
       )}
     </>
