@@ -5,7 +5,6 @@ import { MainLoader } from "../../Common";
 import { SD_Status } from "../../Common/SD";
 import { useEffect, useState } from "react";
 import { inputHelper } from "../../Helper";
-import { orderHeaderModel } from "../../Interfaces";
 
 const filterOptions = [
   "All",
@@ -17,8 +16,20 @@ const filterOptions = [
 
 function AllOrders() {
   const [orderData, setOrderData] = useState([]);
-  const { data, isLoading } = useGetAllOrdersQuery("");
+
   const [filters, setFilters] = useState({ searchString: "", status: "" });
+
+  const [apiFilters, setApiFilters] = useState({
+    searchString: "",
+    status: "",
+  });
+
+  const { data, isLoading } = useGetAllOrdersQuery({
+    ...(apiFilters && {
+      searchString: apiFilters.searchString,
+      status: apiFilters.status,
+    }),
+  });
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -28,24 +39,11 @@ function AllOrders() {
   };
 
   const handleFilters = () => {
-    const tempData = data.result.filter((orderData: orderHeaderModel) => {
-      if (
-        (orderData.pickupName &&
-          orderData.pickupName.includes(filters.searchString)) ||
-        (orderData.pickupEmail &&
-          orderData.pickupEmail.includes(filters.searchString)) ||
-        (orderData.pickupPhoneNumber &&
-          orderData.pickupPhoneNumber.includes(filters.searchString))
-      ) {
-        return orderData;
-      }
+    setApiFilters({
+      searchString: filters.searchString,
+      status: filters.status,
     });
 
-    const finalArray = tempData.filter((orderData: orderHeaderModel) =>
-      filters.status !== "" ? orderData.status === filters.status : orderData
-    );
-
-    setOrderData(finalArray);
   };
 
   useEffect(() => {
