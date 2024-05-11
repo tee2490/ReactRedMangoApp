@@ -49,5 +49,6 @@ const menuItemApi = createApi({
 export const {
     useGetMenuItemsQuery,
     useGetMenuItemByIdQuery,
-    useCreateMenuItemMutation } = menuItemApi;
+    useCreateMenuItemMutation,
+    useUpdateMenuItemMutation } = menuItemApi;
 export default menuItemApi;

@@ -14,6 +14,6 @@ namespace API_RedMango.Models.Dto
 
         [Range(1, int.MaxValue)]
         public double Price { get; set; }
-        public IFormFile File { get; set; }
+        public IFormFile? File { get; set; }
     }
 }
