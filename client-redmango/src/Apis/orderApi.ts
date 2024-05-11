@@ -24,12 +24,14 @@ const orderApi = createApi({
             invalidatesTags: ["Orders"],
         }),
         getAllOrders: builder.query({
-            query: ({ userId, searchString, status }) => ({
+            query: ({ userId, searchString, status, pageNumber, pageSize }) => ({
                 url: "order",
                 params: {
                     ...(userId && { userId }),
                     ...(searchString && { searchString }),
                     ...(status && { status }),
+                    ...(pageNumber && { pageNumber }),
+                    ...(pageSize && { pageSize }),
                 },
             }),
             transformResponse(apiResponse: { result: any }, meta: any) {
